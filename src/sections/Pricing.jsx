@@ -1,5 +1,8 @@
-import React from 'react';
-import Magnetic from '../components/Magnetic';
+import React, { Suspense, useEffect, useState, useRef } from 'react';
+import { useWebGLCapabilities } from '../hooks/useWebGLCapabilities';
+
+// Aurora background managed globally in App.jsx
+const Magnet = React.lazy(() => import('../components/react-bits/Magnet'));
 
 const TIERS = [
   {
@@ -53,15 +56,38 @@ const TIERS = [
 ];
 
 export default function Pricing() {
+  const { lowPower: isReduced, checked } = useWebGLCapabilities();
+  const pricingSectionRef = useRef(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      setInView(entry.isIntersecting);
+    }, { rootMargin: '200px' });
+    if (pricingSectionRef.current) observer.observe(pricingSectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   const scrollToContact = () => {
     const el = document.getElementById('contact');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <section id="pricing" className="relative min-h-screen py-32 px-6 md:px-12 lg:px-24 bg-[#08090b] border-t border-white/5 flex flex-col justify-center">
-      {/* Background decoration */}
-      <div className="absolute top-1/2 left-0 w-80 h-80 bg-brand-primary/5 rounded-full blur-[130px] pointer-events-none" />
+    <section id="pricing" ref={pricingSectionRef} className="relative min-h-screen py-32 px-6 md:px-12 lg:px-24 bg-transparent border-t border-white/5 flex flex-col justify-center overflow-hidden">
+      {/* Squircle SVG clipPath definitions */}
+      <svg className="absolute w-0 h-0" aria-hidden="true">
+        <defs>
+          <clipPath id="squircle-clip" clipPathUnits="objectBoundingBox">
+            <path d="M 0,0.5 C 0,0.08 0.08,0 0.5,0 C 0.92,0 1,0.08 1,0.5 C 1,0.92 0.92,1 0.5,1 C 0.08,1 0,0.92 0,0.5 Z" />
+          </clipPath>
+        </defs>
+      </svg>
+
+      {/* Dynamic fixed background managed globally in App.jsx */}
+
+      {/* Background decoration fallback */}
+      <div className="absolute top-1/2 left-0 w-80 h-80 bg-brand-primary/5 rounded-full blur-[130px] pointer-events-none z-0" />
 
       <div className="max-w-7xl mx-auto w-full z-10 relative">
         {/* Header */}
@@ -82,12 +108,23 @@ export default function Pricing() {
           {TIERS.map((tier, idx) => (
             <div
               key={idx}
-              className={`rounded-3xl p-8 flex flex-col justify-between border relative overflow-hidden transition-transform duration-300 hover:-translate-y-1 ${
-                tier.highlight
-                  ? 'bg-bg-panel border-brand-primary/50 shadow-2xl shadow-brand-primary/10'
-                  : 'bg-bg-panel/40 border-white/5'
-              }`}
+              className="flex flex-col justify-between p-8 relative overflow-hidden transition-transform duration-300 hover:-translate-y-1 bg-bg-panel/40 backdrop-blur-sm"
+              style={{
+                clipPath: 'url(#squircle-clip)',
+                height: '100%'
+              }}
             >
+              {/* Squircle Custom Border Stroke */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 100 100">
+                <path
+                  d="M 0,50 C 0,8 8,0 50,0 C 92,0 100,8 100,50 C 100,92 92,100 50,100 C 8,100 0,92 0,50 Z"
+                  fill="none"
+                  stroke={tier.highlight ? 'rgba(110, 92, 255, 0.4)' : 'rgba(255, 255, 255, 0.05)'}
+                  strokeWidth="2.5"
+                  vectorEffect="non-scaling-stroke"
+                />
+              </svg>
+
               {/* Highlight Tag */}
               {tier.highlight && (
                 <div className="absolute top-4 right-4 bg-brand-primary/10 text-brand-primary border border-brand-primary/20 text-[10px] uppercase tracking-widest px-2.5 py-1 rounded-full font-bold">
@@ -127,7 +164,7 @@ export default function Pricing() {
 
               {/* Action CTA */}
               <div className="mt-10">
-                <Magnetic range={0.15}>
+                <Suspense fallback={
                   <button
                     onClick={scrollToContact}
                     className={`w-full py-4 rounded-full text-xs font-semibold uppercase tracking-wider transition-colors font-display ${
@@ -138,7 +175,20 @@ export default function Pricing() {
                   >
                     {tier.cta}
                   </button>
-                </Magnetic>
+                }>
+                  <Magnet padding={50} magnetStrength={3} wrapperClassName="w-full">
+                    <button
+                      onClick={scrollToContact}
+                      className={`w-full py-4 rounded-full text-xs font-semibold uppercase tracking-wider transition-colors font-display ${
+                        tier.highlight
+                          ? 'bg-brand-primary text-bg-base hover:bg-brand-primary/95'
+                          : 'bg-white/5 text-text-primary border border-white/10 hover:bg-white/10 hover:border-white/20'
+                      }`}
+                    >
+                      {tier.cta}
+                    </button>
+                  </Magnet>
+                </Suspense>
               </div>
             </div>
           ))}

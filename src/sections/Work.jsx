@@ -1,7 +1,10 @@
-import React, { useLayoutEffect, useRef } from 'react';
+import React, { useLayoutEffect, useRef, Suspense } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useReducedMotion } from '../hooks/useReducedMotion';
+
+const PixelTransition = React.lazy(() => import('../components/react-bits/PixelTransition'));
+const ImageTrail = React.lazy(() => import('../components/react-bits/ImageTrail'));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -157,7 +160,7 @@ export default function Work() {
   }, [isReduced]);
 
   return (
-    <div ref={triggerRef} id="work" className="relative overflow-hidden bg-bg-base">
+    <div ref={triggerRef} id="work" className="relative overflow-hidden bg-transparent">
       {/* Scroll indicator overlay */}
       <div className="absolute top-12 left-6 md:left-12 lg:left-24 z-20">
         <span className="text-xs uppercase tracking-[0.25em] text-brand-primary font-bold block mb-2">
@@ -244,10 +247,41 @@ export default function Work() {
                 </div>
 
                 {/* Simulated Device Frame Column */}
-                <div className="col-span-1 lg:col-span-7 h-[350px] lg:h-[480px] flex items-center justify-center relative">
-                  <div className="w-full max-w-[550px] h-full shadow-2xl relative">
-                    {project.mockup}
-                  </div>
+                <div className="col-span-1 lg:col-span-7 h-[350px] lg:h-[480px] flex items-center justify-center relative pointer-events-auto">
+                  <Suspense fallback={
+                    <div className="w-full max-w-[550px] h-full shadow-2xl relative">
+                      {project.mockup}
+                    </div>
+                  }>
+                    <div className="relative w-full max-w-[550px] h-full cursor-none">
+                      {/* ImageTrail for subtle cursor trailing images */}
+                      <ImageTrail 
+                        items={['/projects/havecrops.png', '/projects/readstream.png', '/projects/jetsetgo.png', '/projects/analyscar.png']}
+                        opacity={0.12} 
+                      />
+
+                      <PixelTransition
+                        firstContent={project.mockup}
+                        secondContent={
+                          <img 
+                            src={
+                              project.num === '01' ? '/projects/havecrops.png' :
+                              project.num === '02' ? '/projects/readstream.png' :
+                              project.num === '03' ? '/projects/jetsetgo.png' :
+                              '/projects/analyscar.png'
+                            } 
+                            alt={project.title}
+                            className="w-full h-full object-cover rounded-[15px]" 
+                          />
+                        }
+                        gridSize={10}
+                        pixelColor="#08090B"
+                        animationStepDuration={0.4}
+                        aspectRatio="0%"
+                        className="w-full h-full border border-white/5 shadow-2xl"
+                      />
+                    </div>
+                  </Suspense>
                 </div>
               </div>
             </section>

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import Magnetic from '../components/Magnetic';
+
+const Magnet = React.lazy(() => import('../components/react-bits/Magnet'));
 
 const QUESTIONS = [
   {
@@ -96,9 +97,18 @@ export default function Contact() {
   const currentQuestion = QUESTIONS[currentStep];
 
   return (
-    <section id="contact" className="relative min-h-screen py-32 px-6 md:px-12 lg:px-24 bg-[#0c0d10] border-t border-white/5 flex flex-col justify-center">
+    <section id="contact" className="relative min-h-screen py-32 px-6 md:px-12 lg:px-24 bg-transparent border-t border-white/5 flex flex-col justify-center overflow-hidden">
+      {/* Squircle SVG clipPath definitions */}
+      <svg className="absolute w-0 h-0" aria-hidden="true">
+        <defs>
+          <clipPath id="squircle-clip-contact" clipPathUnits="objectBoundingBox">
+            <path d="M 0,0.5 C 0,0.08 0.08,0 0.5,0 C 0.92,0 1,0.08 1,0.5 C 1,0.92 0.92,1 0.5,1 C 0.08,1 0,0.92 0,0.5 Z" />
+          </clipPath>
+        </defs>
+      </svg>
+
       {/* Background decoration */}
-      <div className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-brand-primary/5 rounded-full blur-[130px] pointer-events-none" />
+      <div className="absolute bottom-1/4 left-1/4 w-80 h-80 bg-brand-primary/5 rounded-full blur-[130px] pointer-events-none z-0" />
 
       <div className="max-w-3xl mx-auto w-full z-10 relative">
         <span className="text-xs uppercase tracking-[0.25em] text-brand-accent font-bold mb-3 inline-block">
@@ -130,9 +140,23 @@ export default function Contact() {
             </button>
           </motion.div>
         ) : (
-          <div className="bg-bg-panel/40 border border-white/5 rounded-3xl p-8 md:p-12 min-h-[380px] flex flex-col justify-between shadow-xl">
+          <div 
+            className="p-8 md:p-12 min-h-[380px] flex flex-col justify-between shadow-xl relative bg-bg-panel/40 backdrop-blur-sm"
+            style={{ clipPath: 'url(#squircle-clip-contact)' }}
+          >
+            {/* Squircle Custom Border Stroke */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 100 100">
+              <path
+                d="M 0,50 C 0,8 8,0 50,0 C 92,0 100,8 100,50 C 100,92 92,100 50,100 C 8,100 0,92 0,50 Z"
+                fill="none"
+                stroke="rgba(255, 255, 255, 0.05)"
+                strokeWidth="2"
+                vectorEffect="non-scaling-stroke"
+              />
+            </svg>
+
             {/* Step Counter */}
-            <div className="flex justify-between items-center text-[10px] text-text-muted font-bold uppercase tracking-widest pb-6 border-b border-white/5">
+            <div className="flex justify-between items-center text-[10px] text-text-muted font-bold uppercase tracking-widest pb-6 border-b border-white/5 z-10">
               <span>Conversational Form</span>
               <span>Question {currentStep + 1} of {QUESTIONS.length}</span>
             </div>
@@ -220,11 +244,11 @@ export default function Contact() {
                 ← Back
               </button>
 
-              <Magnetic range={0.15}>
+              <Suspense fallback={
                 <button
                   onClick={handleNext}
                   disabled={status === 'submitting'}
-                  className="px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider bg-text-primary text-bg-base hover:bg-brand-primary transition-colors font-display"
+                  className="px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider bg-text-primary text-bg-base hover:bg-brand-primary transition-colors font-display z-10"
                 >
                   {status === 'submitting'
                     ? 'Submitting...'
@@ -232,7 +256,21 @@ export default function Contact() {
                     ? 'Submit Project Brief'
                     : 'Next Step →'}
                 </button>
-              </Magnetic>
+              }>
+                <Magnet padding={30} magnetStrength={3} wrapperClassName="z-10">
+                  <button
+                    onClick={handleNext}
+                    disabled={status === 'submitting'}
+                    className="px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider bg-text-primary text-bg-base hover:bg-brand-primary transition-colors font-display"
+                  >
+                    {status === 'submitting'
+                      ? 'Submitting...'
+                      : currentStep === QUESTIONS.length - 1
+                      ? 'Submit Project Brief'
+                      : 'Next Step →'}
+                  </button>
+                </Magnet>
+              </Suspense>
             </div>
           </div>
         )}

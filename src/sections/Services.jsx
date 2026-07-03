@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { Suspense } from 'react';
+
+const TiltedCard = React.lazy(() => import('../components/react-bits/TiltedCard'));
+const AnimatedContent = React.lazy(() => import('../components/react-bits/AnimatedContent'));
 
 const SERVICES_DATA = [
   {
@@ -8,13 +10,12 @@ const SERVICES_DATA = [
     title: 'Brand & Web Design',
     desc: 'Artistic direction and structural layouts that translate brand identity into premium visual architecture. We design for clarity, rhythm, and distinct aesthetic character.',
     deliverable: 'Figma Systems, Typography Scales, High-Fidelity Interactive Prototypes',
-    previewColor: 'from-[#6e5cff]/30 to-[#6e5cff]/5',
     graphic: (
-      <div className="relative w-full h-full flex items-center justify-center">
-        <div className="absolute w-40 h-40 border border-brand-primary/20 rounded-full animate-[spin_10s_linear_infinite]" />
-        <div className="absolute w-24 h-24 border border-dashed border-brand-accent/30 rounded-full animate-[spin_6s_linear_infinite]" />
-        <div className="w-8 h-8 bg-brand-primary rounded-lg rotate-45 flex items-center justify-center">
-          <span className="text-[10px] text-bg-base font-bold font-display">UI</span>
+      <div className="relative w-16 h-16 flex items-center justify-center border border-brand-primary/20 rounded-xl bg-bg-base/50">
+        <div className="absolute w-12 h-12 border border-brand-primary/20 rounded-full animate-[spin_10s_linear_infinite]" />
+        <div className="absolute w-8 h-8 border border-dashed border-brand-accent/30 rounded-full animate-[spin_6s_linear_infinite]" />
+        <div className="w-4 h-4 bg-brand-primary rounded rotate-45 flex items-center justify-center">
+          <span className="text-[6px] text-bg-base font-bold font-display">UI</span>
         </div>
       </div>
     )
@@ -25,19 +26,16 @@ const SERVICES_DATA = [
     title: 'Frontend Engineering',
     desc: 'Bespoke React development using cutting-edge animation engines and optimal asset pipelines. We bridge the gap between creative design and production-grade code.',
     deliverable: 'React & Next.js systems, GSAP/Motion pipelines, 60fps performance profiles',
-    previewColor: 'from-[#ff5a36]/30 to-[#ff5a36]/5',
     graphic: (
-      <div className="relative w-full h-full flex items-center justify-center">
-        <div className="w-full max-w-[200px] border border-white/10 rounded-lg p-3 bg-bg-base/80 shadow-2xl">
-          <div className="flex items-center gap-1.5 border-b border-white/5 pb-2 mb-2">
-            <div className="w-2.5 h-2.5 rounded-full bg-brand-accent" />
-            <div className="w-2.5 h-2.5 rounded-full bg-brand-primary" />
-            <div className="w-2.5 h-2.5 rounded-full bg-white/15" />
+      <div className="relative w-16 h-16 flex items-center justify-center border border-white/10 rounded-xl bg-bg-base/50 p-2">
+        <div className="w-full flex flex-col gap-1">
+          <div className="flex items-center gap-1 border-b border-white/5 pb-1">
+            <div className="w-1 h-1 rounded-full bg-brand-accent" />
+            <div className="w-1 h-1 rounded-full bg-brand-primary" />
           </div>
-          <div className="space-y-1.5">
-            <div className="h-2 w-3/4 bg-brand-primary/20 rounded" />
-            <div className="h-2 w-1/2 bg-brand-accent/20 rounded" />
-            <div className="h-2 w-5/6 bg-white/5 rounded" />
+          <div className="space-y-0.5">
+            <div className="h-1 w-3/4 bg-brand-primary/20 rounded" />
+            <div className="h-1 w-1/2 bg-brand-accent/20 rounded" />
           </div>
         </div>
       </div>
@@ -49,16 +47,11 @@ const SERVICES_DATA = [
     title: 'App Development',
     desc: 'Building cross-platform interfaces that feel completely native, highly fluid, and integrated with modern API systems and backend pipelines.',
     deliverable: 'React Native builds, Swift/Kotlin standards, local caching & sync architectures',
-    previewColor: 'from-[#6e5cff]/30 to-[#ff5a36]/10',
     graphic: (
-      <div className="relative w-full h-full flex items-center justify-center">
-        <div className="w-24 h-48 border border-white/20 rounded-2xl p-2 bg-bg-base/80 relative flex flex-col justify-between">
-          <div className="w-8 h-3 bg-white/20 rounded-full mx-auto mb-2" />
-          <div className="flex-1 flex flex-col justify-center gap-2">
-            <div className="h-10 w-full bg-gradient-to-r from-brand-primary/20 to-brand-accent/20 rounded-lg" />
-            <div className="h-4 w-2/3 bg-white/5 rounded-md" />
-          </div>
-          <div className="w-4 h-4 rounded-full border border-white/15 mx-auto mt-2" />
+      <div className="relative w-16 h-16 flex items-center justify-center border border-white/10 rounded-xl bg-bg-base/50 p-2">
+        <div className="w-6 h-12 border border-white/20 rounded-md p-0.5 bg-bg-base/80 relative flex flex-col justify-between">
+          <div className="h-2 w-full bg-gradient-to-r from-brand-primary/20 to-brand-accent/20 rounded-sm" />
+          <div className="w-2 h-2 rounded-full border border-white/15 mx-auto" />
         </div>
       </div>
     )
@@ -69,21 +62,12 @@ const SERVICES_DATA = [
     title: 'UX Consulting & Systems',
     desc: 'Audit and architectural overhaul of complex applications. We identify user-experience friction points and construct scalable design design libraries.',
     deliverable: 'Scalable Design Token Architecture, UX Auditing, High-conversion flow maps',
-    previewColor: 'from-white/15 to-white/0',
     graphic: (
-      <div className="relative w-full h-full flex flex-col justify-center gap-2 p-6">
-        <div className="flex justify-between items-center text-xs text-text-muted">
-          <span>Efficiency</span>
-          <span className="text-brand-primary">+85%</span>
-        </div>
-        <div className="w-full bg-white/5 h-2 rounded-full overflow-hidden">
+      <div className="relative w-16 h-16 flex flex-col justify-center gap-1 border border-white/10 rounded-xl bg-bg-base/50 p-2">
+        <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
           <div className="bg-brand-primary h-full w-[85%] rounded-full" />
         </div>
-        <div className="flex justify-between items-center text-xs text-text-muted">
-          <span>Interactions</span>
-          <span className="text-brand-accent">100ms</span>
-        </div>
-        <div className="w-full bg-white/5 h-2 rounded-full overflow-hidden">
+        <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
           <div className="bg-brand-accent h-full w-[95%] rounded-full" />
         </div>
       </div>
@@ -91,17 +75,18 @@ const SERVICES_DATA = [
   }
 ];
 
-export default function Services() {
-  const [activeTab, setActiveTab] = useState(SERVICES_DATA[0].id);
+// Dark dithered brand gradient SVG pattern
+const CARD_BG = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="350"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="%23111318"/><stop offset="100%" stop-color="%230c0d10"/></linearGradient><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.07 0"/></filter></defs><rect width="100%" height="100%" fill="url(%23g)"/><rect width="100%" height="100%" filter="url(%23n)"/><rect width="100%" height="100%" fill="none" stroke="%23ffffff" stroke-opacity="0.03" stroke-width="2"/></svg>`;
 
+export default function Services() {
   return (
-    <section id="services" className="relative min-h-screen py-32 px-6 md:px-12 lg:px-24 bg-[#0c0d10] border-t border-white/5">
+    <section id="services" className="relative min-h-screen py-32 px-6 md:px-12 lg:px-24 bg-transparent border-t border-white/5">
       {/* Background decoration */}
       <div className="absolute top-1/2 left-0 w-72 h-72 bg-brand-primary/5 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto z-10 relative">
         {/* Section Header */}
-        <div className="mb-20">
+        <div className="mb-20 text-center md:text-left">
           <span className="text-xs uppercase tracking-[0.25em] text-brand-accent font-bold mb-3 inline-block">
             ✦ Core Capabilities
           </span>
@@ -109,84 +94,70 @@ export default function Services() {
             We deliver polish.
           </h2>
           <p className="mt-4 text-text-muted max-w-lg font-light leading-relaxed">
-            Eliminating structural layouts templates. Each service is custom tailored and documented.
+            Eliminating structural template layouts. Each service is custom tailored, interactive, and high-performance.
           </p>
         </div>
 
-        {/* Asymmetric Accordion Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          {/* Left Accordion Column */}
-          <div className="col-span-1 lg:col-span-7 space-y-4">
-            {SERVICES_DATA.map((service) => {
-              const isOpen = activeTab === service.id;
-              return (
-                <div
-                  key={service.id}
-                  onClick={() => setActiveTab(service.id)}
-                  className={`border-b border-white/10 pb-6 cursor-pointer group transition-all duration-300 ${
-                    isOpen ? 'border-brand-primary' : 'hover:border-white/20'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-6">
-                      <span className={`font-display text-base font-medium transition-colors ${
-                        isOpen ? 'text-brand-primary' : 'text-text-muted group-hover:text-text-primary'
-                      }`}>
-                        {service.num}
-                      </span>
-                      <h3 className={`text-xl md:text-2xl font-display font-semibold transition-colors ${
-                        isOpen ? 'text-text-primary' : 'text-text-muted group-hover:text-text-primary'
-                      }`}>
-                        {service.title}
-                      </h3>
-                    </div>
-                    <span className={`text-xl transition-transform duration-300 ${isOpen ? 'rotate-90 text-brand-primary' : 'text-text-muted group-hover:text-text-primary'}`}>
-                      →
-                    </span>
-                  </div>
+        {/* 2x2 Services TiltedCard Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+          {SERVICES_DATA.map((service, index) => (
+            <Suspense key={service.id} fallback={
+              <div className="h-[350px] rounded-2xl bg-bg-panel border border-white/5 p-8 flex flex-col justify-between">
+                <div>
+                  <span className="text-xs font-mono text-brand-primary">{service.num}</span>
+                  <h3 className="text-xl font-bold font-display mt-2">{service.title}</h3>
+                  <p className="text-text-muted text-xs mt-2">{service.desc}</p>
+                </div>
+              </div>
+            }>
+              <AnimatedContent
+                threshold={0.1}
+                delay={index * 80}
+                className="w-full h-full"
+              >
+                <TiltedCard
+                  imageSrc={CARD_BG}
+                  altText={service.title}
+                  containerHeight="350px"
+                  containerWidth="100%"
+                  imageHeight="350px"
+                  imageWidth="100%"
+                  scaleOnHover={1.03}
+                  rotateAmplitude={8}
+                  showTooltip={false}
+                  showMobileWarning={false}
+                  displayOverlayContent={true}
+                  overlayContent={
+                    <div className="absolute inset-0 p-8 flex flex-col justify-between text-left h-full w-full pointer-events-none select-none">
+                      {/* Top Row: Num & Graphic */}
+                      <div className="flex justify-between items-start w-full">
+                        <span className="text-sm font-mono text-brand-primary font-bold">
+                          // {service.num}
+                        </span>
+                        <div className="pointer-events-auto">
+                          {service.graphic}
+                        </div>
+                      </div>
 
-                  <AnimatePresence initial={false}>
-                    {isOpen && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0, marginTop: 0 }}
-                        animate={{ height: 'auto', opacity: 1, marginTop: 16 }}
-                        exit={{ height: 0, opacity: 0, marginTop: 0 }}
-                        transition={{ duration: 0.35, ease: 'easeInOut' }}
-                        className="overflow-hidden"
-                      >
-                        <p className="text-text-muted font-light leading-relaxed pr-6">
+                      {/* Bottom Info */}
+                      <div className="space-y-3">
+                        <h3 className="text-xl md:text-2xl font-display font-bold text-text-primary">
+                          {service.title}
+                        </h3>
+                        <p className="text-xs text-text-muted font-light leading-relaxed">
                           {service.desc}
                         </p>
-                        <div className="mt-4 pt-4 border-t border-white/5 flex flex-col sm:flex-row sm:items-center gap-2 text-xs">
-                          <span className="text-brand-primary font-bold uppercase tracking-wider">Deliverables:</span>
-                          <span className="text-text-primary font-medium">{service.deliverable}</span>
+                        <div className="pt-3 border-t border-white/5 flex items-center gap-2 text-[10px]">
+                          <span className="text-brand-accent font-bold uppercase tracking-widest font-mono">Deliverables:</span>
+                          <span className="text-text-primary font-medium truncate max-w-[200px] sm:max-w-none">{service.deliverable}</span>
                         </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Right Interactive Preview Panel */}
-          <div className="col-span-1 lg:col-span-5 h-[350px] lg:h-[450px] rounded-2xl bg-bg-panel border border-white/5 overflow-hidden p-8 flex flex-col justify-between relative">
-            <div className="absolute inset-0 bg-gradient-to-br transition-all duration-500 opacity-20 pointer-events-none" />
-            <div className="flex justify-between items-center text-xs uppercase tracking-widest text-text-muted z-10">
-              <span>Interactive Preview</span>
-              <span className="text-brand-primary font-bold">● Live</span>
-            </div>
-
-            {/* Render Selected Graphic */}
-            <div className="flex-1 flex items-center justify-center z-10 transition-transform duration-500">
-              {SERVICES_DATA.find((s) => s.id === activeTab)?.graphic}
-            </div>
-
-            <div className="z-10 bg-bg-base/40 backdrop-blur-sm p-4 rounded-xl border border-white/5 flex items-center justify-between">
-              <span className="text-xs text-text-muted">Explore our signature workflow details.</span>
-              <span className="text-[10px] uppercase font-bold text-brand-accent">0{SERVICES_DATA.findIndex(s => s.id === activeTab) + 1}</span>
-            </div>
-          </div>
+                      </div>
+                    </div>
+                  }
+                />
+              </AnimatedContent>
+            </Suspense>
+          ))}
         </div>
       </div>
     </section>

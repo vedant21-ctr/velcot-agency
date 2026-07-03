@@ -1,7 +1,10 @@
-import React, { useLayoutEffect, useRef } from 'react';
+import React, { useLayoutEffect, useRef, Suspense, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useReducedMotion } from '../hooks/useReducedMotion';
+import { useWebGLCapabilities } from '../hooks/useWebGLCapabilities';
+
+const Ballpit = React.lazy(() => import('../components/react-bits/Ballpit'));
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -34,7 +37,16 @@ const JOURNEY_STEPS = [
 
 export default function Journey() {
   const containerRef = useRef(null);
-  const isReduced = useReducedMotion();
+  const { lowPower: isReduced, checked } = useWebGLCapabilities();
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      setInView(entry.isIntersecting);
+    }, { rootMargin: '200px' });
+    if (containerRef.current) observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   useLayoutEffect(() => {
     if (isReduced) return;
@@ -60,9 +72,18 @@ export default function Journey() {
   }, [isReduced]);
 
   return (
-    <section id="journey" ref={containerRef} className="relative min-h-screen py-32 px-6 md:px-12 lg:px-24 bg-[#0c0d10] border-t border-white/5">
+    <section id="journey" ref={containerRef} className="relative min-h-screen py-32 px-6 md:px-12 lg:px-24 bg-transparent border-t border-white/5 overflow-hidden">
+      {/* Ballpit physics background */}
+      {!isReduced && checked && inView && (
+        <div className="absolute inset-0 z-0 opacity-30 pointer-events-none">
+          <Suspense fallback={null}>
+            <Ballpit count={40} followCursor={true} />
+          </Suspense>
+        </div>
+      )}
+
       {/* Background decoration */}
-      <div className="absolute top-1/4 left-1/2 w-80 h-80 bg-brand-accent/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/2 w-80 h-80 bg-brand-accent/5 rounded-full blur-[120px] pointer-events-none z-0" />
 
       <div className="max-w-7xl mx-auto z-10 relative">
         {/* Section Title */}

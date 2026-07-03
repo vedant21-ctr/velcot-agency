@@ -1,7 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import Lenis from 'lenis';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useWebGLCapabilities } from './hooks/useWebGLCapabilities';
+
+const Aurora = React.lazy(() => import('./components/react-bits/Aurora'));
 
 // Components & Sections
 import CustomCursor from './components/CustomCursor';
@@ -18,6 +21,8 @@ import Footer from './sections/Footer';
 gsap.registerPlugin(ScrollTrigger);
 
 export default function App() {
+  const { lowPower: isReduced, checked } = useWebGLCapabilities();
+
   useEffect(() => {
     // Initialize Lenis smooth scroll
     const lenis = new Lenis({
@@ -25,6 +30,10 @@ export default function App() {
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
     });
+
+    // Force scroll to top on load/reload
+    window.scrollTo(0, 0);
+    lenis.scrollTo(0, { immediate: true });
 
     function raf(time) {
       lenis.raf(time);
@@ -49,9 +58,18 @@ export default function App() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-bg-base text-text-primary overflow-x-hidden selection:bg-brand-primary selection:text-bg-base">
+    <div className="relative min-h-screen bg-[#08090B] text-text-primary overflow-x-hidden selection:bg-brand-primary selection:text-bg-base">
+      {/* Full-bleed Fixed Aurora Background */}
+      {!isReduced && checked && (
+        <div className="fixed inset-0 z-0 opacity-15 pointer-events-none">
+          <Suspense fallback={null}>
+            <Aurora colorStops={['#08090b', '#6e5cff', '#08090b', '#ff5a36']} amplitude={0.5} speed={0.15} />
+          </Suspense>
+        </div>
+      )}
+
       {/* SVG Grain Overlay */}
-      <div className="noise-overlay pointer-events-none">
+      <div className="noise-overlay pointer-events-none z-10">
         <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
           <filter id="noise">
             <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch" />

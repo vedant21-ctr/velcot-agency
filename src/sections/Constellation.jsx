@@ -82,12 +82,9 @@ export default function Constellation() {
     if (isReduced) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          setInView(true);
-          observer.disconnect();
-        }
+        setInView(entry.isIntersecting);
       },
-      { rootMargin: '100px' }
+      { rootMargin: '200px' }
     );
     if (sectionRef.current) {
       observer.observe(sectionRef.current);
@@ -96,7 +93,7 @@ export default function Constellation() {
   }, [isReduced]);
 
   return (
-    <section id="constellation" ref={sectionRef} className="relative min-h-screen py-32 px-6 md:px-12 lg:px-24 bg-[#08090b] border-t border-white/5 flex flex-col justify-center">
+    <section id="constellation" ref={sectionRef} className="relative min-h-screen py-32 px-6 md:px-12 lg:px-24 bg-transparent border-t border-white/5 flex flex-col justify-center">
       {/* Section background decoration */}
       <div className="absolute bottom-0 right-0 w-80 h-80 bg-brand-primary/5 rounded-full blur-[120px] pointer-events-none" />
 

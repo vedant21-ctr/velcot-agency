@@ -27,3 +27,4 @@ dist-ssr
 # Reports
 *.report.html
 *.report.json
+audits/
